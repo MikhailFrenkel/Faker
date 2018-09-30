@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FakerConsoleApp
 {
-    class Foo
+    public class Foo
     {
         public int Id { get; set; }
 

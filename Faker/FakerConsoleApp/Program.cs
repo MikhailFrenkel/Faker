@@ -14,6 +14,7 @@ namespace FakerConsoleApp
         static void Main(string[] args)
         {
             Faker faker = new Faker();
+            Bar bar = faker.Create<Bar>();
             Foo foo = faker.Create<Foo>();
         }
     }

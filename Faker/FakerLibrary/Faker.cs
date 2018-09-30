@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -8,8 +7,6 @@ namespace FakerLibrary
 {
     public class Faker
     {
-        private const int MaxString = 20;
-
         public T Create<T>() where T : new()
         {
             Type type = typeof(T);
@@ -21,7 +18,7 @@ namespace FakerLibrary
                 {
                     if (property.SetMethod.IsPublic)
                     {
-                        SetValue<T>(ref result, property);
+                        SetValue(ref result, property);
                     }
                 }
             }
@@ -32,6 +29,7 @@ namespace FakerLibrary
         private void SetValue<T>(ref T result, PropertyInfo property)
         {
             var propertyType = property.PropertyType;
+            string objectType = result.GetType().Name;
             switch (propertyType.Name)
             {
                 case "Int32":
@@ -53,7 +51,22 @@ namespace FakerLibrary
                     SetSingle(ref result, property);
                     break;
                 case "ICollection`1":
-                    SetICollection<T>(ref result, property);
+                    SetICollection(ref result, property);
+                    break;
+                default:
+                    if (propertyType.Name == objectType)
+                    {
+                        property.SetMethod.Invoke(result, new object[] {result});
+                    }
+                    else
+                    {
+                        var o = Activator.CreateInstance(propertyType);
+                        var method = typeof(Faker).GetMethod("Create");
+                        var genericMethod = method?.MakeGenericMethod(o.GetType());
+                        var set = genericMethod?.Invoke(this, null);
+                        property.SetMethod.Invoke(result, new[] {set});
+                    }
+
                     break;
             }
         }
@@ -72,7 +85,7 @@ namespace FakerLibrary
 
         private void SetString<T>(ref T result, PropertyInfo property)
         {
-            var set = new object[] {CustomRandom.GetString(MaxString)};
+            var set = new object[] {CustomRandom.GetString()};
             property.SetMethod.Invoke(result, set);
         }
 
