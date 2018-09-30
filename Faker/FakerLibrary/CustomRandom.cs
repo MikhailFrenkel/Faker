@@ -13,7 +13,7 @@ namespace FakerLibrary
             return Rnd.Next();
         }
 
-        internal static string GetString(int size)
+        internal static string GetString(int size = 20)
         {
             StringBuilder builder = new StringBuilder();
             char ch;
@@ -46,6 +46,32 @@ namespace FakerLibrary
         internal static Single GetSingle()
         {
             return (float) Rnd.NextDouble();
+        }
+
+        internal static Int32 GetPositiveValue(int min, int max)
+        {
+            return Math.Abs(Rnd.Next(min, max));
+        }
+
+        internal static object GetValue(Type t)
+        {
+            switch(t.Name)
+            {
+                case "Int32":
+                    return GetInt32();
+                case "Int64":
+                    return GetInt64();
+                case "String":
+                    return GetString();
+                case "Double":
+                    return GetDouble();
+                case "Single":
+                    return GetSingle();
+                case "DateTime":
+                    return GetDateTime();
+                default:
+                    return default(object);
+            }
         }
     }
 }
