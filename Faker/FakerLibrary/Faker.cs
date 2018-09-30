@@ -7,12 +7,32 @@ namespace FakerLibrary
 {
     public class Faker
     {
+        private object _nestedObject;
+
         public T Create<T>() where T : new()
         {
-            Type type = typeof(T);
             T result = new T();
             
-            foreach (var property in type.GetProperties())
+            foreach (var property in typeof(T).GetProperties())
+            {
+                if (property?.SetMethod != null)
+                {
+                    if (property.SetMethod.IsPublic)
+                    {
+                        SetValue(ref result, property);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private  T Init<T>(object o) where T: new()
+        {
+            T result = new T();
+            _nestedObject = o;
+
+            foreach (var property in typeof(T).GetProperties())
             {
                 if (property?.SetMethod != null)
                 {
@@ -58,12 +78,15 @@ namespace FakerLibrary
                     {
                         property.SetMethod.Invoke(result, new object[] {result});
                     }
+                    else if (propertyType.Name == _nestedObject?.GetType().Name)
+                    {
+                        property.SetMethod.Invoke(result, new object[] {_nestedObject});
+                    }
                     else
                     {
-                        var o = Activator.CreateInstance(propertyType);
-                        var method = typeof(Faker).GetMethod("Create");
-                        var genericMethod = method?.MakeGenericMethod(o.GetType());
-                        var set = genericMethod?.Invoke(this, null);
+                    var method = typeof(Faker).GetMethod("Init", BindingFlags.Instance | BindingFlags.NonPublic);
+                        var genericMethod = method?.MakeGenericMethod(propertyType);
+                        var set = genericMethod?.Invoke(this, new object[] {result});
                         property.SetMethod.Invoke(result, new[] {set});
                     }
 

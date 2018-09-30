@@ -21,5 +21,9 @@ namespace FakerConsoleApp
         public ICollection<int> Days { get; set; }
 
         public ICollection<DateTime> Dates { get; set; }
+
+        public Foo I { get; set; }
+
+        public Bar Bar { get; set; }
     }
 }
