@@ -13,5 +13,11 @@ namespace FakerConsoleApp
         public string Name { get; set; }
 
         public DateTime PublishedDate { get; set; }
+
+        public long Ticks { get; set; }
+
+        public double Cash { get; set; }
+
+        public float Random { get; set; }
     }
 }
