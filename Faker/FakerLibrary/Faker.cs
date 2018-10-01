@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 
 namespace FakerLibrary
@@ -11,8 +12,20 @@ namespace FakerLibrary
 
         public T Create<T>() where T : new()
         {
-            T result = new T();
-            
+            var ctors = typeof(T).GetConstructors().OrderByDescending(x => x.GetParameters().Length);
+            var ctor = ctors.First();
+
+            var parametersInfo = ctor.GetParameters();
+            var parameters = new object[parametersInfo.Length];
+
+            for (int i = 0; i < parametersInfo.Length; i++)
+            {
+                parameters[i] = CustomRandom.GetValue(parametersInfo[i].ParameterType);
+            }
+
+
+            var result = ctor.Invoke(parameters);
+
             foreach (var property in typeof(T).GetProperties())
             {
                 if (property?.SetMethod != null)
@@ -24,7 +37,7 @@ namespace FakerLibrary
                 }
             }
 
-            return result;
+            return (T)result;
         }
 
         private  T Init<T>(object o) where T: new()
@@ -80,16 +93,12 @@ namespace FakerLibrary
                     }
                     else if (propertyType.Name == _nestedObject?.GetType().Name)
                     {
-                        property.SetMethod.Invoke(result, new object[] {_nestedObject});
+                        property.SetMethod.Invoke(result, new[] {_nestedObject});
                     }
                     else
                     {
-                    var method = typeof(Faker).GetMethod("Init", BindingFlags.Instance | BindingFlags.NonPublic);
-                        var genericMethod = method?.MakeGenericMethod(propertyType);
-                        var set = genericMethod?.Invoke(this, new object[] {result});
-                        property.SetMethod.Invoke(result, new[] {set});
+                        property.SetMethod.Invoke(result, new[] { GetDTO(ref result, propertyType)});
                     }
-
                     break;
             }
         }
@@ -128,12 +137,29 @@ namespace FakerLibrary
         {
             var set = new object[] {CustomRandom.GetSingle()};
             property.SetMethod.Invoke(result, set);
+        }     
+
+        private object GetDTO<T>(ref T result, Type property)
+        {
+            try
+            {
+                var method =
+                    typeof(Faker).GetMethod("Init", BindingFlags.Instance | BindingFlags.NonPublic);
+                var genericMethod = method?.MakeGenericMethod(property);
+                var dto = genericMethod?.Invoke(this, new object[] { result });
+                return dto;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            return null;
         }
 
         private void SetICollection<T>(ref T result, PropertyInfo property)
         {
             var nestedType = property.PropertyType.GenericTypeArguments[0];
-
             switch (nestedType.Name)
             {
                 case "Int32":
@@ -156,6 +182,7 @@ namespace FakerLibrary
                     break;
             }
         }
+
 
         private void SetICollectionInt32<T>(ref T result, PropertyInfo property)
         {
