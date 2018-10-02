@@ -23,6 +23,8 @@ namespace FakerConsoleApp
 
         public string Name { get; set; }
 
+        public Int64 Number { get; set; }
+
         public ICollection<DateTime> Dates { get; set; }
 
         public Bar I { get; set; }

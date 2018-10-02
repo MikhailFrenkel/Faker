@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakerLibrary", "FakerLibrary\FakerLibrary.csproj", "{2F1662D4-187E-4542-AA4C-7F8C39B26878}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakerLibrary", "FakerLibrary\FakerLibrary.csproj", "{2F1662D4-187E-4542-AA4C-7F8C39B26878}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakerConsoleApp", "FakerConsoleApp\FakerConsoleApp.csproj", "{1E42BB89-2DC6-4B5C-BFA7-674391F960FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faker.Test", "Faker.Test\Faker.Test.csproj", "{F99024C0-C92E-4939-B930-E8A77C8258F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1E42BB89-2DC6-4B5C-BFA7-674391F960FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E42BB89-2DC6-4B5C-BFA7-674391F960FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E42BB89-2DC6-4B5C-BFA7-674391F960FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F99024C0-C92E-4939-B930-E8A77C8258F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F99024C0-C92E-4939-B930-E8A77C8258F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F99024C0-C92E-4939-B930-E8A77C8258F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F99024C0-C92E-4939-B930-E8A77C8258F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

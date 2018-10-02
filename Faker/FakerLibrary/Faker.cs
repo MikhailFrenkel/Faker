@@ -53,8 +53,21 @@ namespace FakerLibrary
 
         private  T Init<T>(object o) where T: new()
         {
-            T result = new T();
             _nestedObject = o;
+
+
+            var ctors = typeof(T).GetConstructors().OrderByDescending(x => x.GetParameters().Length);
+            var ctor = ctors.First();
+
+            var parametersInfo = ctor.GetParameters();
+            var parameters = new object[parametersInfo.Length];
+
+            for (int i = 0; i < parametersInfo.Length; i++)
+            {
+                parameters[i] = GetValue(parametersInfo[i].ParameterType);
+            }
+
+            var result = ctor.Invoke(parameters);
 
             foreach (var property in typeof(T).GetProperties())
             {
@@ -69,7 +82,7 @@ namespace FakerLibrary
                 }
             }
 
-            return result;
+            return (T)result;
         }
 
         private void SetValue<T>(ref T result, PropertyInfo property)
