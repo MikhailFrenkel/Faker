@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Interface">
-      <HintPath>..\..\Plugins\Plugins\Interface\bin\Debug\netstandard2.0\Interface.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Interface\Interface.csproj" />
   </ItemGroup>
 
 </Project>

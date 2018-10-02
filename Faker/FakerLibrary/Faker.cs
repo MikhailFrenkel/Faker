@@ -3,12 +3,23 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Interface;
 
 namespace FakerLibrary
 {
     public class Faker
     {
         private object _nestedObject;
+        private IRandom _rnd;
+
+        public Faker(IRandom rnd)
+        {
+            //TODO: exception в конструкторе?
+            if (rnd == null)
+                new ArgumentException("IRandom require notNull value");
+            _rnd = rnd;
+        }
+
 
         public T Create<T>() where T : new()
         {
@@ -20,7 +31,7 @@ namespace FakerLibrary
 
             for (int i = 0; i < parametersInfo.Length; i++)
             {
-                parameters[i] = CustomRandom.GetValue(parametersInfo[i].ParameterType);
+                parameters[i] = GetValue(parametersInfo[i].ParameterType);
             }
 
 
@@ -52,6 +63,8 @@ namespace FakerLibrary
                     if (property.SetMethod.IsPublic)
                     {
                         SetValue(ref result, property);
+
+                        //property.SetMethod.Invoke(result, new[] {GetValue(property.PropertyType)});
                     }
                 }
             }
@@ -97,7 +110,14 @@ namespace FakerLibrary
                     }
                     else
                     {
-                        property.SetMethod.Invoke(result, new[] { GetDTO(ref result, propertyType)});
+                        try
+                        {
+                            property.SetMethod.Invoke(result, new[] { GetDTO(ref result, propertyType) });
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
                     }
                     break;
             }
@@ -105,37 +125,44 @@ namespace FakerLibrary
 
         private void SetDateTime<T>(ref T result, PropertyInfo property)
         {
-            var set = new object[] { CustomRandom.GetDateTime()};
+            var set = new object[] { _rnd.GetDateTime()};
             property.SetMethod.Invoke(result, set);
         }
 
         private void SetInt32<T>(ref T result, PropertyInfo property)
-        { 
-            var set = new object[]{ CustomRandom.GetInt32() };
-            property.SetMethod.Invoke(result, set);
+        {
+            try
+            {
+                var set = new object[] {_rnd.GetInt32()};
+                property.SetMethod.Invoke(result, set);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         private void SetString<T>(ref T result, PropertyInfo property)
         {
-            var set = new object[] {CustomRandom.GetString()};
+            var set = new object[] {_rnd.GetString()};
             property.SetMethod.Invoke(result, set);
         }
 
         private void SetInt64<T>(ref T result, PropertyInfo property)
         {
-            var set = new object[] {CustomRandom.GetInt64()};
+            var set = new object[] {_rnd.GetInt64()};
             property.SetMethod.Invoke(result, set);
         }
 
         private void SetDouble<T>(ref T result, PropertyInfo property)
         {
-            var set = new object[] { CustomRandom.GetDouble() };
+            var set = new object[] { _rnd.GetDouble() };
             property.SetMethod.Invoke(result, set);
         }
 
         private void SetSingle<T>(ref T result, PropertyInfo property)
         {
-            var set = new object[] {CustomRandom.GetSingle()};
+            var set = new object[] {_rnd.GetSingle()};
             property.SetMethod.Invoke(result, set);
         }     
 
@@ -183,13 +210,12 @@ namespace FakerLibrary
             }
         }
 
-
         private void SetICollectionInt32<T>(ref T result, PropertyInfo property)
         {
             ICollection<Int32> col = new Collection<Int32>();
-            for (int i = 0; i < CustomRandom.GetPositiveValue(1, 20); i++)
+            for (int i = 0; i < _rnd.GetPositiveValue(1, 20); i++)
             {
-                col.Add(CustomRandom.GetInt32());
+                col.Add(_rnd.GetInt32());
             }
 
             property.SetMethod.Invoke(result, new object[] {col});
@@ -198,9 +224,9 @@ namespace FakerLibrary
         private void SetICollectionInt64<T>(ref T result, PropertyInfo property)
         {
             ICollection<Int64> col = new Collection<Int64>();
-            for (int i = 0; i < CustomRandom.GetPositiveValue(1, 20); i++)
+            for (int i = 0; i < _rnd.GetPositiveValue(1, 20); i++)
             {
-                col.Add(CustomRandom.GetInt64());
+                col.Add(_rnd.GetInt64());
             }
 
             property.SetMethod.Invoke(result, new object[] { col });
@@ -209,9 +235,9 @@ namespace FakerLibrary
         private void SetICollectionString<T>(ref T result, PropertyInfo property)
         {
             ICollection<String> col = new Collection<String>();
-            for (int i = 0; i < CustomRandom.GetPositiveValue(1, 20); i++)
+            for (int i = 0; i < _rnd.GetPositiveValue(1, 20); i++)
             {
-                col.Add(CustomRandom.GetString());
+                col.Add(_rnd.GetString());
             }
 
             property.SetMethod.Invoke(result, new object[] { col });
@@ -220,9 +246,9 @@ namespace FakerLibrary
         private void SetICollectionDateTime<T>(ref T result, PropertyInfo property)
         {
             ICollection<DateTime> col = new Collection<DateTime>();
-            for (int i = 0; i < CustomRandom.GetPositiveValue(1, 20); i++)
+            for (int i = 0; i < _rnd.GetPositiveValue(1, 20); i++)
             {
-                col.Add(CustomRandom.GetDateTime());
+                col.Add(_rnd.GetDateTime());
             }
 
             property.SetMethod.Invoke(result, new object[] { col });
@@ -231,9 +257,9 @@ namespace FakerLibrary
         private void SetICollectionDouble<T>(ref T result, PropertyInfo property)
         {
             ICollection<Double> col = new Collection<Double>();
-            for (int i = 0; i < CustomRandom.GetPositiveValue(1, 20); i++)
+            for (int i = 0; i < _rnd.GetPositiveValue(1, 20); i++)
             {
-                col.Add(CustomRandom.GetDouble());
+                col.Add(_rnd.GetDouble());
             }
 
             property.SetMethod.Invoke(result, new object[] { col });
@@ -242,12 +268,33 @@ namespace FakerLibrary
         private void SetICollectionSingle<T>(ref T result, PropertyInfo property)
         {
             ICollection<Single> col = new Collection<Single>();
-            for (int i = 0; i < CustomRandom.GetPositiveValue(1, 20); i++)
+            for (int i = 0; i < _rnd.GetPositiveValue(1, 20); i++)
             {
-                col.Add(CustomRandom.GetSingle());
+                col.Add(_rnd.GetSingle());
             }
 
             property.SetMethod.Invoke(result, new object[] { col });
+        }
+
+        private object GetValue(Type t)
+        {
+            switch (t.Name)
+            {
+                case "Int32":
+                    return _rnd.GetInt32();
+                case "Int64":
+                    return _rnd.GetInt64();
+                case "String":
+                    return _rnd.GetString();
+                case "Double":
+                    return _rnd.GetDouble();
+                case "Single":
+                    return _rnd.GetSingle();
+                case "DateTime":
+                    return _rnd.GetDateTime();
+                default:
+                    return default(object);
+            }
         }
     }
 }
