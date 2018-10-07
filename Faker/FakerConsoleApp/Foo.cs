@@ -24,6 +24,8 @@ namespace FakerConsoleApp
 
         public Foo I { get; set; }
 
+        public Bro Bro { get; set; }
+
         public Bar Bar { get; set; }
 
         public Foo()

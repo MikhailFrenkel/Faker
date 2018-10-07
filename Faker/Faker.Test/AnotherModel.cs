@@ -23,5 +23,7 @@ namespace Faker.Test
             Id = id;
             DateTime = dateTime;
         }
+
+        public ThirdModel ThirdModel { get; set; }
     }
 }

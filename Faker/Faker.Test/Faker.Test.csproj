@@ -61,6 +61,7 @@
     <Compile Include="FakerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestModel.cs" />
+    <Compile Include="ThirdModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

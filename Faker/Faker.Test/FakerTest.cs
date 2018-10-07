@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Interface;
 using FluentAssertions;
@@ -10,14 +11,16 @@ namespace Faker.Test
     public class FakerTest
     {
         //TODO: вложенность 3+ рекурсия
-        private const string Dll_1 = "../../../../Plugins/Plugins/CustomRandom1/bin/Debug/netstandard2.0/CustomRandom1.dll";
+        private Dictionary<Type, IGenerator> _generators;
+        private const string Dll = "../../../../Plugins/Plugins/Generators/bin/Debug/netstandard2.0/Generators.dll";
         private TestModel _testModel;
 
         [TestInitialize]
         public void Init()
         {
-            IRandom rnd = GetCustomRandom(Dll_1);
-            FakerLibrary.Faker faker = new FakerLibrary.Faker(rnd);
+            _generators = new Dictionary<Type, IGenerator>();
+            GetGenerators(Dll);
+            FakerLibrary.Faker faker = new FakerLibrary.Faker();
             _testModel = faker.Create<TestModel>();
         }
 
@@ -76,18 +79,23 @@ namespace Faker.Test
             _testModel.AnotherModel.Name.Should().NotBeNullOrEmpty();
         }
 
-        private IRandom GetCustomRandom(string pathDll)
+        [TestMethod]
+        public void NestedReferenceIsSet()
+        {
+            _testModel.AnotherModel.ThirdModel.TestModel.Should().Be(_testModel);
+        }
+
+        private void GetGenerators(string pathDll)
         {
             var asm = Assembly.LoadFrom(pathDll);
             foreach (var type in asm.GetTypes())
             {
-                if (type.GetInterface(typeof(IRandom).FullName) != null)
+                if (type.GetInterface(typeof(IGenerator).FullName) != null)
                 {
-                    return (IRandom)Activator.CreateInstance(type);
+                    var gen = (IGenerator)Activator.CreateInstance(type);
+                    _generators.Add(gen.Type, gen);
                 }
             }
-
-            return null;
         }
     }
 }
