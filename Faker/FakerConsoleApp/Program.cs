@@ -7,6 +7,8 @@ namespace FakerConsoleApp
 {
     class Program
     {
+        //TODO: Dictionary<Type, Generator>
+
         private const string Dll_1 = "../../../../Plugins/Plugins/CustomRandom1/bin/Debug/netstandard2.0/CustomRandom1.dll";
         private const string Dll_2 = "../../../../Plugins/Plugins/CustomRandom2/bin/Debug/netstandard2.0/CustomRandom2.dll";
 
@@ -17,6 +19,23 @@ namespace FakerConsoleApp
             Faker faker = new Faker(rnd1);
             Bar bar = faker.Create<Bar>();
             Foo foo = faker.Create<Foo>();
+            OutputProperties(bar);
+            Console.ReadKey();
+        }
+
+        private static void OutputProperties(object value)
+        {
+            Console.WriteLine("Class: " + value.GetType().Name);
+            foreach (var property in value.GetType().GetProperties())
+            {
+                if (property?.GetMethod != null)
+                {
+                    var propertyValue = property.GetValue(value);
+                    Console.WriteLine(property.Name + ": " + propertyValue);
+                    
+                }
+            }
+            Console.WriteLine();
         }
 
         private static IRandom GetCustomRandom(string pathDll)

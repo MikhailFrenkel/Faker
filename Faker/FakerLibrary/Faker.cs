@@ -10,10 +10,12 @@ namespace FakerLibrary
     public class Faker
     {
         private object _nestedObject;
+        private Dictionary<Type, IGenerator> _generators;
         private IRandom _rnd;
 
         public Faker(IRandom rnd)
         {
+            //TODO: словарь тип-генератор
             //TODO: exception в конструкторе?
             if (rnd == null)
                 new ArgumentException("IRandom require notNull value");

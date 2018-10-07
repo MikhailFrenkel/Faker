@@ -4,7 +4,7 @@ using Interface;
 
 namespace CustomRandom1
 {
-    public class CustomRandom1 : IRandom
+    public class CustomRandom1
     {
         private readonly Random _rnd = new Random((int)DateTime.Now.Ticks);
 

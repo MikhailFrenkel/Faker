@@ -32,5 +32,9 @@ namespace FakerConsoleApp
         public Foo Foo { get; set; }
 
         public Url Url { get; set; }
+
+        private int p;
+
+        private string s { get; set; }
     }
 }

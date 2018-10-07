@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using FakerConsoleApp;
 using Interface;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,6 +9,7 @@ namespace Faker.Test
     [TestClass]
     public class FakerTest
     {
+        //TODO: вложенность 3+ рекурсия
         private const string Dll_1 = "../../../../Plugins/Plugins/CustomRandom1/bin/Debug/netstandard2.0/CustomRandom1.dll";
         private TestModel _testModel;
 
