@@ -9,7 +9,7 @@ namespace Generators
 
         public object GetValue()
         {
-            return (Int64)(Rnd.Next() * Rnd.Next());
+            return GetInt64();
         }
     }
 }

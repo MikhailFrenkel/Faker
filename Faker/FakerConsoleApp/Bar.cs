@@ -25,7 +25,11 @@ namespace FakerConsoleApp
 
         public Int64 Number { get; set; }
 
-        public ICollection<DateTime> Dates { get; set; }
+        public ICollection<Int32> Numbers32 { get; set; }
+
+        public ICollection<Int64> Numbers64 { get; set; }
+
+        public DateTime Date { get; set; }
 
         public Bar I { get; set; }
 

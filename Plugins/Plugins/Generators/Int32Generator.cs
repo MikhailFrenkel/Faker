@@ -9,7 +9,7 @@ namespace Generators
 
         public object GetValue()
         {
-            return Rnd.Next();
+            return GetInt32();
         }
     }
 }

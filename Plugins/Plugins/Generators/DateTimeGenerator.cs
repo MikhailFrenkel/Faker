@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Interface;
 
 namespace Generators
@@ -9,9 +11,7 @@ namespace Generators
 
         public object GetValue()
         {
-            DateTime start = new DateTime(1995, 1, 1);
-            int range = (DateTime.Today - start).Days;
-            return start.AddDays(Rnd.Next(range));
+            return GetDateTime();
         }
     }
 }

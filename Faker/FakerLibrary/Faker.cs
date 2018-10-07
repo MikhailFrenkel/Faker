@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reflection;
 using Interface;
 
@@ -11,21 +10,17 @@ namespace FakerLibrary
     {
         private object _nestedObject;
         private Dictionary<Type, IGenerator> _generators;
-        private IRandom _rnd;
+        private const string Dll = "../../../../Plugins/Plugins/Generators/bin/Debug/netstandard2.0/Generators.dll";
 
-        public Faker(IRandom rnd)
+        public Faker()
         {
-            //TODO: словарь тип-генератор
-            //TODO: exception в конструкторе?
-            if (rnd == null)
-                new ArgumentException("IRandom require notNull value");
-            _rnd = rnd;
+            _generators = new Dictionary<Type, IGenerator>();
+            GetGenerators(Dll);
         }
-
 
         public T Create<T>() where T : new()
         {
-            var ctors = typeof(T).GetConstructors().OrderByDescending(x => x.GetParameters().Length);
+            /*var ctors = typeof(T).GetConstructors().OrderByDescending(x => x.GetParameters().Length);
             var ctor = ctors.First();
 
             var parametersInfo = ctor.GetParameters();
@@ -37,7 +32,9 @@ namespace FakerLibrary
             }
 
 
-            var result = ctor.Invoke(parameters);
+            var result = ctor.Invoke(parameters);*/
+
+            T result = new T();
 
             foreach (var property in typeof(T).GetProperties())
             {
@@ -53,7 +50,7 @@ namespace FakerLibrary
             return (T)result;
         }
 
-        private  T Init<T>(object o) where T: new()
+        /*private  T Init<T>(object o) where T: new()
         {
             _nestedObject = o;
 
@@ -85,13 +82,18 @@ namespace FakerLibrary
             }
 
             return (T)result;
-        }
+        }*/
 
         private void SetValue<T>(ref T result, PropertyInfo property)
         {
             var propertyType = property.PropertyType;
             string objectType = result.GetType().Name;
-            switch (propertyType.Name)
+
+            var fl = _generators.TryGetValue(propertyType, out var generator);
+            if (fl)
+                property.SetMethod.Invoke(result, new[] { generator.GetValue() } );
+
+            /*switch (propertyType.Name)
             {
                 case "Int32":
                     SetInt32(ref result, property);
@@ -135,10 +137,10 @@ namespace FakerLibrary
                         }
                     }
                     break;
-            }
+            }*/
         }
 
-        private void SetDateTime<T>(ref T result, PropertyInfo property)
+        /*private void SetDateTime<T>(ref T result, PropertyInfo property)
         {
             var set = new object[] { _rnd.GetDateTime()};
             property.SetMethod.Invoke(result, set);
@@ -309,6 +311,19 @@ namespace FakerLibrary
                     return _rnd.GetDateTime();
                 default:
                     return default(object);
+            }
+        }*/
+
+        private void GetGenerators(string pathDll)
+        {
+            var asm = Assembly.LoadFrom(pathDll);
+            foreach (var type in asm.GetTypes())
+            {
+                if (type.GetInterface(typeof(IGenerator).FullName) != null)
+                {
+                    var gen = (IGenerator)Activator.CreateInstance(type);
+                    _generators.Add(gen.Type, gen);
+                }
             }
         }
     }
